@@ -22,9 +22,8 @@ jobs:
       - name: build
         run: |
           pyxel package . ticoban.py
-          ls
           mkdir -p AppDir/usr/bin
-          cp ticoban AppDir/usr/bin/ticoban
+          cp ticoban-pyxel AppDir/usr/bin/ticoban
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage-action@master
         env:
