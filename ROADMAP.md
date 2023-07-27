@@ -1,0 +1,4 @@
+- [x] Añadir niveles oficiales (de momento solo 10)
+- [ ] Definir las rutas rutas donde se pueden meter niveles extra
+- [ ] Añadir un sistema de traducciones
+- [ ] Añadir animaciones al personaje y las bolas al moverse estilo Pokémon
