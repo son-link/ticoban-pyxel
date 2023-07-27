@@ -24,9 +24,11 @@ jobs:
         run: |
           pyxel package . ticoban.py
           pyxel app2exe ticoban-pyxel.pyxapp
+      - name: Copy files
+        run: |
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/icons
-          cp ticoban-pyxel AppDir/usr/bin/ticoban
+          install -Dm755 ticoban-pyxel AppDir/usr/bin/ticoban
           install -Dm644 icon.png AppDir/usr/share/icons/ticoban.png
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1
