@@ -25,9 +25,9 @@ jobs:
           pyxel package . ticoban.py
           pyxel app2exe ticoban-pyxel.pyxapp
           mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/icons
+          mkdir -p AppDir/usr/share/pixmaps
           cp ticoban-pyxel AppDir/usr/bin/ticoban
-          cp icon.png AppDir/usr/share/icons/ticoban.png
+          cp icon.png AppDir/usr/share/pixmaps/ticoban.png
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1
         env:
