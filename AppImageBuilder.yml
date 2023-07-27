@@ -5,6 +5,7 @@ AppDir:
   app_info:
     id: io.sonlink.ticoban
     name: Ticoban
+    icon: ticoban
     version: latest
     exec: usr/bin/ticoban
     exec_args: $@
