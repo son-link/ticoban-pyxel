@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt clean
           sudo apt-get update
-          sudo apt-get install -yq python3 python3-pip libsdl2-2.0-0 squashfs-tools strace util-linux zsync --fix-missing
+          sudo apt-get install -y libsdl2-2.0-0
       - name: install pyxel
         run: sudo pip3 install pyxel pyinstaller
       - name: build
@@ -29,7 +29,7 @@ jobs:
           cp ticoban-pyxel AppDir/usr/bin/ticoban
           cp icon.png AppDir/usr/share/icons/ticoban.png
       - name: Build AppImage
-        uses: AppImageCrafters/build-appimage-action@master
+        uses: AppImageCrafters/build-appimage@v1
         env:
           UPDATE_INFO: gh-releases-zsync|AppImageCrafters|ticoban|latest|*x86_64.AppImage.zsync
         with:
