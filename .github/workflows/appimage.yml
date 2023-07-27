@@ -22,6 +22,7 @@ jobs:
       - name: build
         run: |
           pyxel package . ticoban.py
+          pyxel app2exe ticoban-pyxel.pyxapp
           mkdir -p AppDir/usr/bin
           cp ticoban-pyxel AppDir/usr/bin/ticoban
       - name: Build AppImage
