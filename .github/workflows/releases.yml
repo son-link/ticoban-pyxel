@@ -5,7 +5,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*'
-      - '20*y'
+      - '20*'
 
 jobs:
   build-appimage:
