@@ -22,11 +22,9 @@ jobs:
         run: sudo pip3 install pyxel pyinstaller
       - name: build
         run: |
-          pyxel package . ticoban.py
-          pyxel app2exe ticoban-pyxel.pyxapp
+          ./build-linux.sh --appimage
       - name: Copy files
         run: |
-          mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/icons
           install -Dm755 ticoban-pyxel AppDir/usr/bin/ticoban
           install -Dm644 icon.png AppDir/usr/share/icons/ticoban.png
