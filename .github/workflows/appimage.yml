@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt clean
           sudo apt-get update
-          sudo apt-get install -y libsdl2-2.0-0 zsync
+          sudo apt-get install -y libsdl2-2.0-0 squashfs-tools
       - name: install pyxel
         run: sudo pip3 install pyxel pyinstaller
       - name: build
