@@ -25,9 +25,8 @@ jobs:
           ./build-linux.sh --appimage
       - name: Copy files
         run: |
-          mkdir -p AppDir/usr/share/icons
-          install -Dm755 ticoban-pyxel AppDir/usr/bin/ticoban
-          install -Dm644 icon.png AppDir/usr/share/icons/ticoban.png
+          mkdir -p mkdir -p AppDir/usr/share/icons/hicolor/128x128/apps/
+          install -Dm644 icon.png AppDir/usr/share/icons/hicolor/128x128/apps/ticoban.png
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1
         env:
