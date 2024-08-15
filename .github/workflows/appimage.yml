@@ -31,7 +31,7 @@ jobs:
       - name: Build AppImage
         uses: AppImageCrafters/build-appimage@v1
         env:
-          UPDATE_INFO: gh-releases-zsync|AppImageCrafters|ticoban|latest|*x86_64.AppImage.zsync
+          UPDATE_INFO: gh-releases-zsync|son-link|ticoban-pyxel|latest|*x86_64.AppImage.zsync
         with:
           recipe: AppImageBuilder.yml
       - uses: actions/upload-artifact@v2
