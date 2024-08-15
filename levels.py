@@ -1,9 +1,14 @@
 from math import floor
 from os import listdir, path
-import pathlib
+import sys
 
 
-__dir = pathlib.Path(__file__).parent.resolve()
+__dir = ''
+if getattr(sys, 'frozen', False):
+    __dir = path.dirname(sys.executable)
+elif __file__:
+    __dir = path.dirname(__file__)
+
 LEVELS_DIR = path.join(__dir, 'levels')
 
 
@@ -55,17 +60,6 @@ class Levels:
 
                     if not levelEnd and len(line) > width:
                         width = len(line)
-
-                ''' elif not levelEnd:
-                    print(lastLine)
-                    end = i if '#' in lastLine else i - 1
-                    self.levels.append({
-                        'start':    levelStartLine,
-                        'end':      end,
-                        'width':    width
-                    })
-                    levelEnd = True
-                    width = 0'''
 
             if not levelEnd:
 
@@ -129,3 +123,10 @@ class Levels:
                 self.fileSelected = 0
 
         return self.listLevelsFiles[self.fileSelected]
+
+    def reset(self):
+        self.fileSelected = 0
+        self.levels = []
+        self.levelsFile = None
+        self.total = 0
+        self.current = 0

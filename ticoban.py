@@ -30,11 +30,12 @@ class Ticoban:
         self.player = None
         self.rocks = []
         # 1: Main Screen, 2: Selecting level file, 3: Playing
-        # 4: Level complete, 5: Game Over
+        # 4: Level complete, 5: Pause
         self.game_state = 1
+        self.cursorMenuPos = 0
 
         # self.level = self.levels.levels[0]
-        pyxel.init(SCREEN_W, SCREEN_H, 'Ticoban', display_scale=3,
+        pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=3,
                    capture_scale=3, capture_sec=20)
         pyxel.load('assets.pyxres')
 
@@ -139,6 +140,25 @@ class Ticoban:
                 colide, next_x, next_y = self.collide_map(self.player, 'down')
                 moveDir = 'down' if colide != COL_WALL else None
 
+            # Reset current level
+            if (
+                pyxel.btnp(pyxel.KEY_Z) or
+                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+            ):
+                self.clearMap()
+                self.curLevel = self.levels.getLevel(self.levels.current)
+                self.getPlayerRock()
+                self.game_state = 3
+
+            # Show pause menu
+            if (
+                pyxel.btnp(pyxel.KEY_X) or
+                (pyxel.btnp(pyxel.KEY_SPACE) and self.game_state != 3) or
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
+            ):
+                self.game_state = 5
+
             if colide == COL_ROCK:
                 for rock in self.rocks:
                     if rock.x == next_x and rock.y == next_y:
@@ -166,6 +186,47 @@ class Ticoban:
                     self.getPlayerRock()
                     self.game_state = 3
 
+        # Game paused
+        elif self.game_state == 5:
+            if (
+                pyxel.btnp(pyxel.KEY_Z) or
+                pyxel.btnp(pyxel.KEY_RETURN) or
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+            ):
+                if self.cursorMenuPos == 0:
+                    self.game_state = 3
+                elif self.cursorMenuPos == 1:
+                    self.levelFile = self.levels.listLevelsFiles[0]
+                    self.clearMap()
+                    self.levels.reset()
+                    self.cursorMenuPos = 0
+                    self.game_state = 1
+                elif self.cursorMenuPos == 2:
+                    pyxel.quit()
+            elif (
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
+                pyxel.btnp(pyxel.KEY_UP)
+            ):
+                if self.cursorMenuPos > 0:
+                    self.cursorMenuPos -= 1
+                else:
+                    self.cursorMenuPos = 2
+            elif (
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
+                pyxel.btnp(pyxel.KEY_DOWN)
+            ):
+                if self.cursorMenuPos < 2:
+                    self.cursorMenuPos += 1
+                else:
+                    self.cursorMenuPos = 0
+            elif (
+                pyxel.btnp(pyxel.KEY_X) or
+                pyxel.btnp(pyxel.KEY_SPACE) or
+                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
+            ):
+                self.cursorMenuPos = 0
+                self.game_state = 3
+
     def draw(self):
         tile_x = 0
         tile_y = 0
@@ -175,13 +236,17 @@ class Ticoban:
         if self.game_state == 1 or self.game_state == 2:
             pyxel.bltm(0, 0, 0, 0, 0, SCREEN_W, SCREEN_H)
             centerText('Press A (Z key) to start.', 72, 12)
-            centerText('(c) 2020 - 2023 Alfonso Saavedra "Son Link"', 120, 12)
+            centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', 120, 12)
 
         if self.game_state == 2:
             centerText('Press UP or DOWN to select file.', 80, 12)
             centerText(self.levelFile, 96, 3)
 
-        elif (self.game_state == 3 and self.curLevel) or self.game_state == 4:
+        elif (
+            (self.game_state == 3 and self.curLevel) or
+            self.game_state == 4 or
+            self.game_state == 5
+        ):
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
             w = self.curLevel['width']
             h = self.curLevel['height']
@@ -223,6 +288,15 @@ class Ticoban:
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
             centerText('LEVEL COMPLETE', 64, 6)
             centerText('Press A to continue', 72, 12)
+
+        if self.game_state == 5:
+            startX = (SCREEN_W / 2) - 24
+            startY = (SCREEN_H / 2) - 14
+            pyxel.rect(startX, startY, 48, 28, 3)
+            pyxel.blt(startX, startY + (3 + (self.cursorMenuPos * 8)), 0, 8, 0, 8, 8, 14)
+            pyxel.text(startX + 10, startY + 4, 'Continue', 4)
+            pyxel.text(startX + 10, startY + 12, 'Main menu', 4)
+            pyxel.text(startX + 10, startY + 20, 'Exit', 4)
 
     def loadLevels(self, levelfile):
         self.levels.loadLevels(levelfile)

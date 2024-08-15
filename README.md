@@ -17,15 +17,16 @@ In this game you must move the balls to the holes to go to the next level.
 
 * A button (Z key): OK
 * Pad / keyboard arrows: scroll (left and right in the language selection to select it)
+* Start button (X and Space keys): Open/close pause menu
 
 ### Special thanks
 
-To the people of the Telegram channel of [Jugando En Linux] (https: //jugandoenlinux.xom), for trying it and supporting me.
+To the people of the Telegram channel of [Jugando En Linux](https://jugandoenlinux.com), for trying it and supporting me.
 
 Under the GNU/GPL3 or newer license
 ## Español
 
-Un clone de Sokoban hecho con [Pyxel](https://github.com/kitao/pyxel).
+Un clon de Sokoban hecho con [Pyxel](https://github.com/kitao/pyxel).
 
 En este juego debes de mover las bolas hasta los agujeros para pasar al siguiente nivel.
 
@@ -33,10 +34,11 @@ En este juego debes de mover las bolas hasta los agujeros para pasar al siguient
 
 * Botón A (tecla Z): Aceptar
 * Pad (Flechas teclado): desplazarse (izquierda y derecha en la de selección de idioma para seleccionarlo)
+* Botón Start (teclas X y Espacio): Abre/cierra el menú de pausa
 
 ### Agradecimientos
 
-* A la gente del canal de Telegram de [Jugando En Linux](https://jugandoenlinux.xom), por probarlo y soportarme.
+* A la gente del canal de Telegram de [Jugando En Linux](https://jugandoenlinux.com), por probarlo y soportarme.
 
 Bajo licencia GNU/GPL3 o más reciente
 
