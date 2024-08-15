@@ -1,4 +1,4 @@
-name: Ticovan AppImage
+name: Ticovan AppImage Relases
 
 on:
   push:
