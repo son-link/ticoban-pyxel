@@ -29,7 +29,7 @@ class Levels:
         self.total = 0
         self.current = 0
 
-        with open(path.join(LEVELS_DIR, self.levelsFile)) as data:
+        with open(path.join(LEVELS_DIR, self.levelsFile), 'r', encoding='utf-8') as data:
             levelStartLine = 0
             levelEnd = True
             width = 0
@@ -43,11 +43,13 @@ class Levels:
 
                 if len(line) > 0:
                     if line.startswith('title'):
+
                         if not levelEnd:
                             self.levels.append({
                                 'start':    levelStartLine,
                                 'end':      i,
-                                'width':    width
+                                'width':    width,
+                                'title':    line.replace('title:', '').strip()
                             })
                             levelEnd = True
                             width = 0
@@ -62,12 +64,12 @@ class Levels:
                         width = len(line)
 
             if not levelEnd:
-
                 end = totalLines if '#' in lastLine else totalLines - 1
                 self.levels.append({
                     'start':    levelStartLine,
                     'end':      end,
-                    'width':    width
+                    'width':    width,
+                    'title':    ''
                 })
 
             data.close()
@@ -76,7 +78,7 @@ class Levels:
     def getLevel(self, index):
         level = self.levels[index]
         lines = []
-        with open(path.join(LEVELS_DIR, self.levelsFile)) as f:
+        with open(path.join(LEVELS_DIR, self.levelsFile), 'r', encoding='utf8') as f:
             for fline in f.readlines()[level['start']:level['end']]:
                 line = []
                 for i in range(level['width']):
@@ -92,14 +94,15 @@ class Levels:
         height = level['end'] - level['start']
 
         start_x = floor(((30 - width) / 2) - 1)
-        start_y = floor(((17 - height) / 2) - 1)
+        start_y = floor(((22 - height) / 2) - 1)
 
         return {
             'width':    width,
             'height':   height,
             'lines':    lines,
             'start_x':  start_x,
-            'start_y':  start_y
+            'start_y':  start_y,
+            'title':    level['title']
         }
 
     def next(self):

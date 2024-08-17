@@ -11,7 +11,7 @@ class Rock:
         print(self.x, self.y)
 
     def draw(self):
-        pyxel.tilemap(1).pset(self.x, self.y, self.sprite)
+        pyxel.tilemaps[1].pset(self.x, self.y, self.sprite)
 
     def setPos(self, x, y):
         self.x = x

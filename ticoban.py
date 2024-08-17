@@ -2,14 +2,7 @@ import pyxel
 from rock import Rock
 from levels import Levels
 from player import Player
-
-# Globals
-SCREEN_W = 240
-SCREEN_H = 136
-
-# Collide values
-COL_WALL = 1
-COL_ROCK = 2
+from globals import SCREEN_H, SCREEN_W, COL_ROCK, COL_WALL
 
 
 def centerText(text, posy, color):
@@ -33,9 +26,10 @@ class Ticoban:
         # 4: Level complete, 5: Pause
         self.game_state = 1
         self.cursorMenuPos = 0
+        self.moves = 0
 
         # self.level = self.levels.levels[0]
-        pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=3,
+        pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=2,
                    capture_scale=3, capture_sec=20)
         pyxel.load('assets.pyxres')
 
@@ -45,8 +39,8 @@ class Ticoban:
         w = self.curLevel['width']
         h = self.curLevel['height']
 
-        self.start_x = pyxel.floor(((30 - w) / 2) - 1)
-        self.start_y = pyxel.floor(((17 - h) / 2) - 1)
+        self.start_x = pyxel.floor(((30 - w) / 2) + 1)
+        self.start_y = pyxel.floor(((22 - h) / 2))
 
         tile_x = self.start_x
         tile_y = self.start_y
@@ -236,7 +230,7 @@ class Ticoban:
         if self.game_state == 1 or self.game_state == 2:
             pyxel.bltm(0, 0, 0, 0, 0, SCREEN_W, SCREEN_H)
             centerText('Press A (Z key) to start.', 72, 12)
-            centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', 120, 12)
+            centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', SCREEN_H - 16, 12)
 
         if self.game_state == 2:
             centerText('Press UP or DOWN to select file.', 80, 12)
@@ -248,11 +242,17 @@ class Ticoban:
             self.game_state == 5
         ):
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
+            pyxel.tilemaps[1].load(0, 0, 'ticoban.tmx', 0)
             w = self.curLevel['width']
             h = self.curLevel['height']
 
-            self.start_x = pyxel.floor(((30 - w) / 2) - 1)
-            self.start_y = pyxel.floor(((17 - h) / 2) - 1)
+            # Show movements and map's name
+            pyxel.rect(0, 0, SCREEN_W, 8, 15)
+            pyxel.text(8, 1, f"Map: {self.curLevel['title']}", 12)
+            pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+
+            self.start_x = pyxel.floor(((30 - w) / 2) + 1)
+            self.start_y = pyxel.floor(((22 - h) / 2))
 
             tile_x = self.start_x
             tile_y = self.start_y
@@ -261,16 +261,16 @@ class Ticoban:
                 draw_floor = False
                 for char in line:
                     if char == '#':
-                        pyxel.tilemap(1).pset(tile_x, tile_y, (7, 1))
+                        pyxel.tilemaps[1].pset(tile_x, tile_y, (7, 1))
                         draw_floor = True
                     elif char == '.' or char == '*':
-                        pyxel.tilemap(1).pset(tile_x, tile_y, (4, 0))
+                        pyxel.tilemaps[1].pset(tile_x, tile_y, (4, 0))
                     else:
                         if char == '':
                             draw_floor = False
 
                         if draw_floor:
-                            pyxel.tilemap(1).pset(tile_x, tile_y, (3, 0))
+                            pyxel.tilemaps[1].pset(tile_x, tile_y, (3, 0))
 
                     tile_x += 1
 
@@ -327,12 +327,14 @@ class Ticoban:
             x1 = x
             y1 = y + 1
 
-        tile_x, tile_y = pyxel.tilemap(1).pget(x1, y1)
+        tile_x, tile_y = pyxel.tilemaps[1].pget(x1, y1)
         if tile_x == 7 and tile_y == 1:
             return (COL_WALL, x1, y1)
-        elif tile_x == 1 and tile_y == 0:
+
+        if tile_x == 1 and tile_y == 0:
             return (COL_ROCK, x1, y1)
 
+        self.moves += 1
         return (False, x1, y1)
 
     def compLevelComplete(self):
@@ -351,15 +353,15 @@ class Ticoban:
         w = self.curLevel['width']
         h = self.curLevel['height']
 
-        self.start_x = pyxel.floor(((30 - w) / 2) - 1)
-        self.start_y = pyxel.floor(((17 - h) / 2) - 1)
+        self.start_x = pyxel.floor(((30 - w) / 2) + 1)
+        self.start_y = pyxel.floor(((22 - h) / 2))
 
         tile_x = self.start_x
         tile_y = self.start_y
 
         for line in self.curLevel['lines']:
             for char in line:
-                pyxel.tilemap(1).pset(tile_x, tile_y, (0, 0))
+                pyxel.tilemaps[1].pset(tile_x, tile_y, (0, 0))
                 tile_x += 1
 
             tile_x = self.start_x
