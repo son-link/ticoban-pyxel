@@ -1,7 +1,7 @@
 from math import floor
 from os import listdir, path
 import sys
-
+import pyxel
 
 __dir = ''
 if getattr(sys, 'frozen', False):
@@ -96,6 +96,8 @@ class Levels:
         start_x = floor(((30 - width) / 2) - 1)
         start_y = floor(((22 - height) / 2) - 1)
 
+        self.genBackground()
+
         return {
             'width':    width,
             'height':   height,
@@ -133,3 +135,19 @@ class Levels:
         self.levelsFile = None
         self.total = 0
         self.current = 0
+
+    def genBackground(self):
+        for y in range(22):
+            for x in range(30):
+                rand = pyxel.rndi(1, 20)
+                print(rand)
+                if rand < 6:
+                    pyxel.tilemaps[1].pset(x, y, (10, 1))
+                elif rand >= 6 and rand < 10:
+                    pyxel.tilemaps[1].pset(x, y, (9, 1))
+                elif rand >= 10 and rand < 14:
+                    pyxel.tilemaps[1].pset(x, y, (11, 1))
+                elif rand >= 14 and rand < 17:
+                    pyxel.tilemaps[1].pset(x, y, (12, 1))
+                else:
+                    pyxel.tilemaps[1].pset(x, y, (13, 1))
