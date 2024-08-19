@@ -140,7 +140,6 @@ class Levels:
         for y in range(22):
             for x in range(30):
                 rand = pyxel.rndi(1, 20)
-                print(rand)
                 if rand < 6:
                     pyxel.tilemaps[1].pset(x, y, (10, 1))
                 elif rand >= 6 and rand < 10:

@@ -375,6 +375,7 @@ class Ticoban:
 
         self.curLevel = None
         self.rocks = []
+        self.moves = 0
 
 
 tico = Ticoban()
