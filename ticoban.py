@@ -242,7 +242,6 @@ class Ticoban:
             self.game_state == 5
         ):
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
-            pyxel.tilemaps[1].load(0, 0, 'ticoban.tmx', 0)
             w = self.curLevel['width']
             h = self.curLevel['height']
 
