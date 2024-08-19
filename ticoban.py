@@ -285,8 +285,15 @@ class Ticoban:
 
         if self.game_state == 4:
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
-            centerText('LEVEL COMPLETE', 64, 6)
-            centerText('Press A to continue', 72, 12)
+            pyxel.rect(0, 0, SCREEN_W, 8, 15)
+            pyxel.text(8, 1, f"Map: {self.curLevel['title']}", 12)
+            pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+
+            startX = (SCREEN_W / 2) - 40
+            startY = (SCREEN_H / 2) - 14
+            pyxel.rect(startX, startY, 80, 28, 0)
+            centerText('LEVEL COMPLETE', startY + 4, 6)
+            centerText('Press A to continue', startY + 16, 12)
 
         if self.game_state == 5:
             startX = (SCREEN_W / 2) - 24
