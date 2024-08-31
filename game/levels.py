@@ -1,4 +1,3 @@
-from math import floor
 from os import listdir, path
 import sys
 import pyxel
@@ -20,9 +19,35 @@ class Levels:
         self.levelsFile = None
         self.total = 0
         self.current = 0
+        self.curLevel = None
 
         for f in sorted(listdir(LEVELS_DIR)):
             self.listLevelsFiles.append(f)
+
+    def draw(self):
+        ''' Draw the level '''
+        tile_x = self.curLevel['start_x']
+        tile_y = self.curLevel['start_y']
+
+        for line in self.curLevel['lines']:
+            draw_floor = False
+            for char in line:
+                if char == '#':
+                    pyxel.tilemaps[1].pset(tile_x, tile_y, (7, 1))
+                    draw_floor = True
+                elif char == '.' or char == '*':
+                    pyxel.tilemaps[1].pset(tile_x, tile_y, (4, 0))
+                else:
+                    if char == '':
+                        draw_floor = False
+
+                    if draw_floor:
+                        pyxel.tilemaps[1].pset(tile_x, tile_y, (3, 0))
+
+                tile_x += 1
+
+            tile_x = self.curLevel['start_x']
+            tile_y += 1
 
     def loadLevels(self):
         self.levelsFile = self.listLevelsFiles[self.fileSelected]
@@ -76,12 +101,12 @@ class Levels:
             self.total = len(self.levels)
 
     def getLevel(self, index):
-        level = self.levels[index]
+        data = self.levels[index]
         lines = []
         with open(path.join(LEVELS_DIR, self.levelsFile), 'r', encoding='utf8') as f:
-            for fline in f.readlines()[level['start']:level['end']]:
+            for fline in f.readlines()[data['start']:data['end']]:
                 line = []
-                for i in range(level['width']):
+                for i in range(data['width']):
                     line.append('')
 
                 for i, char in enumerate(fline.replace('\n', '')):
@@ -90,22 +115,24 @@ class Levels:
                 lines.append(line)
             f.close()
 
-        width = level['width']
-        height = level['end'] - level['start']
+        width = data['width']
+        height = data['end'] - data['start']
 
-        start_x = floor(((30 - width) / 2) - 1)
-        start_y = floor(((22 - height) / 2) - 1)
-
+        start_x = pyxel.floor(((30 - width) / 2) + 1)
+        start_y = pyxel.floor(((22 - height) / 2))
         self.genBackground()
 
-        return {
+        level = {
             'width': width,
             'height': height,
             'lines': lines,
             'start_x': start_x,
             'start_y': start_y,
-            'title': level['title']
+            'title': data['title']
         }
+
+        self.curLevel = level
+        return level
 
     def next(self):
         if self.current < self.total:

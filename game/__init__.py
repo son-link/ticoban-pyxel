@@ -22,8 +22,7 @@ class Ticoban:
         self.mainMenu.set_highlight_color(5)
         self.mainMenu.set_cursor_img(0, 128, 0, 0)
         self.levelFile = self.levels.listLevelsFiles[0]
-        self.curLevel = None
-        self.curLevelIndex = 0
+        self.levels.curLevelIndex = 0
 
         self.player = None
         self.rocks = []
@@ -32,8 +31,6 @@ class Ticoban:
         self.game_state = 1
         self.cursorMenuPos = 0
         self.moves = 0
-        self.start_x = 0
-        self.start_y = 0
 
         # self.level = self.levels.levels[0]
         pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=2,
@@ -43,16 +40,10 @@ class Ticoban:
         pyxel.run(self.update, self.draw)
 
     def getPlayerRock(self):
-        w = self.curLevel['width']
-        h = self.curLevel['height']
+        tile_x = self.levels.curLevel['start_x']
+        tile_y = self.levels.curLevel['start_y']
 
-        self.start_x = pyxel.floor(((30 - w) / 2) + 1)
-        self.start_y = pyxel.floor(((22 - h) / 2))
-
-        tile_x = self.start_x
-        tile_y = self.start_y
-
-        for line in self.curLevel['lines']:
+        for line in self.levels.curLevel['lines']:
             for char in line:
                 if char == '@':
                     self.player = Player(tile_x, tile_y)
@@ -61,7 +52,7 @@ class Ticoban:
 
                 tile_x += 1
 
-            tile_x = self.start_x
+            tile_x = self.levels.curLevel['start_x']
             tile_y += 1
 
     def update(self):
@@ -81,7 +72,7 @@ class Ticoban:
             ):
                 self.levels.fileSelected = self.mainMenu.get_current_pos()
                 self.levels.loadLevels()
-                self.curLevel = self.levels.getLevel(self.curLevelIndex)
+                self.levels.curLevel = self.levels.getLevel(self.levels.curLevelIndex)
                 self.getPlayerRock()
                 self.game_state = 3
 
@@ -147,13 +138,12 @@ class Ticoban:
             # Reset current level
             if (
                 pyxel.btnp(pyxel.KEY_Z) or
-                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
+                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state == 2) or
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
             ):
                 self.clearMap()
-                self.curLevel = self.levels.getLevel(self.levels.current)
+                self.levels.curLevel = self.levels.getLevel(self.levels.current)
                 self.getPlayerRock()
-                self.game_state = 3
 
             # Show pause menu
             if (
@@ -186,7 +176,7 @@ class Ticoban:
                 next_level = self.levels.next()
                 if next_level:
                     self.clearMap()
-                    self.curLevel = next_level
+                    self.levels.curLevel = next_level
                     self.getPlayerRock()
                     self.game_state = 3
 
@@ -232,9 +222,6 @@ class Ticoban:
                 self.game_state = 3
 
     def draw(self):
-        tile_x = 0
-        tile_y = 0
-
         pyxel.cls(0)
 
         if self.game_state == 1 or self.game_state == 2:
@@ -248,44 +235,18 @@ class Ticoban:
             self.mainMenu.draw()
 
         elif (
-            (self.game_state == 3 and self.curLevel) or
+            (self.game_state == 3 and self.levels.curLevel) or
             self.game_state == 4 or
             self.game_state == 5
         ):
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
-            w = self.curLevel['width']
-            h = self.curLevel['height']
 
             # Show movements and map's name
             pyxel.rect(0, 0, SCREEN_W, 8, 15)
-            pyxel.text(8, 1, f"Map: {self.curLevel['title']}", 12)
+            pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
             pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
 
-            self.start_x = pyxel.floor(((30 - w) / 2) + 1)
-            self.start_y = pyxel.floor(((22 - h) / 2))
-
-            tile_x = self.start_x
-            tile_y = self.start_y
-
-            for line in self.curLevel['lines']:
-                draw_floor = False
-                for char in line:
-                    if char == '#':
-                        pyxel.tilemaps[1].pset(tile_x, tile_y, (7, 1))
-                        draw_floor = True
-                    elif char == '.' or char == '*':
-                        pyxel.tilemaps[1].pset(tile_x, tile_y, (4, 0))
-                    else:
-                        if char == '':
-                            draw_floor = False
-
-                        if draw_floor:
-                            pyxel.tilemaps[1].pset(tile_x, tile_y, (3, 0))
-
-                    tile_x += 1
-
-                tile_x = self.start_x
-                tile_y += 1
+            self.levels.draw()
 
             if self.player:
                 self.player.draw()
@@ -297,7 +258,7 @@ class Ticoban:
         if self.game_state == 4:
             pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
             pyxel.rect(0, 0, SCREEN_W, 8, 15)
-            pyxel.text(8, 1, f"Map: {self.curLevel['title']}", 12)
+            pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
             pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
 
             startX = (SCREEN_W / 2) - 40
@@ -357,9 +318,9 @@ class Ticoban:
     def compLevelComplete(self):
         in_hole = 0
         for rock in self.rocks:
-            x = rock.x - self.start_x
-            y = rock.y - self.start_y
-            char = self.curLevel['lines'][y][x]
+            x = rock.x - self.levels.curLevel['start_x']
+            y = rock.y - self.levels.curLevel['start_y']
+            char = self.levels.curLevel['lines'][y][x]
             if char == '.' or char == '*':
                 in_hole += 1
 
@@ -367,24 +328,8 @@ class Ticoban:
             self.game_state = 4
 
     def clearMap(self):
-        w = self.curLevel['width']
-        h = self.curLevel['height']
-
-        self.start_x = pyxel.floor(((30 - w) / 2) + 1)
-        self.start_y = pyxel.floor(((22 - h) / 2))
-
-        tile_x = self.start_x
-        tile_y = self.start_y
-
-        for line in self.curLevel['lines']:
-            for _ in line:
-                pyxel.tilemaps[1].pset(tile_x, tile_y, (0, 0))
-                tile_x += 1
-
-            tile_x = self.start_x
-            tile_y += 1
-
-        self.curLevel = None
+        self.levels.genBackground()
+        self.levels.curLevel = None
         self.rocks = []
         self.moves = 0
 
