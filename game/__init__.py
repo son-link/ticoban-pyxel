@@ -17,12 +17,30 @@ def centerText(text, posy, color):
 class Ticoban:
     def __init__(self):
         self.levels = Levels()
+
+        # Main menu
         self.mainMenu = PyxelMenu(72, 96, self.levels.listLevelsFiles, 3)
         self.mainMenu.set_text_color(3)
         self.mainMenu.set_highlight_color(5)
         self.mainMenu.set_cursor_img(0, 128, 0, 0)
         self.levelFile = self.levels.listLevelsFiles[0]
         self.levels.curLevelIndex = 0
+
+        # Pause menu
+        self.pauseConf = {
+            'start_x': (SCREEN_W / 2) - 28,
+            'start_y': ((SCREEN_H / 2) - 14),
+        }
+
+        self.pauseMenu = PyxelMenu(
+            self.pauseConf['start_x'] + 2,
+            self.pauseConf['start_y'] + 12,
+            ['Continue', 'Main menu', 'Exit'],
+            3
+        )
+        self.pauseMenu.set_text_color(4)
+        self.pauseMenu.set_highlight_color(6)
+        self.pauseMenu.set_cursor_img(0, 128, 0, 0)
 
         self.player = None
         self.rocks = []
@@ -32,9 +50,8 @@ class Ticoban:
         self.cursorMenuPos = 0
         self.moves = 0
 
-        # self.level = self.levels.levels[0]
         pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=2,
-                   capture_scale=3, capture_sec=20)
+                   capture_scale=3, capture_sec=40)
         pyxel.load('assets.pyxres')
 
         pyxel.run(self.update, self.draw)
@@ -187,38 +204,32 @@ class Ticoban:
                 pyxel.btnp(pyxel.KEY_RETURN) or
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
             ):
-                if self.cursorMenuPos == 0:
+                if self.pauseMenu.get_current_pos() == 0:
                     self.game_state = 3
-                elif self.cursorMenuPos == 1:
+                elif self.pauseMenu.get_current_pos() == 1:
                     self.levelFile = self.levels.listLevelsFiles[0]
                     self.clearMap()
                     self.levels.reset()
-                    self.cursorMenuPos = 0
+                    self.pauseMenu.set_cursor_pos(0)
                     self.game_state = 1
-                elif self.cursorMenuPos == 2:
+                elif self.pauseMenu.get_current_pos() == 2:
                     pyxel.quit()
             elif (
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
                 pyxel.btnp(pyxel.KEY_UP)
             ):
-                if self.cursorMenuPos > 0:
-                    self.cursorMenuPos -= 1
-                else:
-                    self.cursorMenuPos = 2
+                self.pauseMenu.move_up()
             elif (
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
                 pyxel.btnp(pyxel.KEY_DOWN)
             ):
-                if self.cursorMenuPos < 2:
-                    self.cursorMenuPos += 1
-                else:
-                    self.cursorMenuPos = 0
+                self.pauseMenu.move_down()
             elif (
                 pyxel.btnp(pyxel.KEY_X) or
                 pyxel.btnp(pyxel.KEY_SPACE) or
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
             ):
-                self.cursorMenuPos = 0
+                self.pauseMenu.set_cursor_pos(0)
                 self.game_state = 3
 
     def draw(self):
@@ -231,7 +242,6 @@ class Ticoban:
 
         if self.game_state == 2:
             centerText('Press UP or DOWN to select file.', 80, 12)
-            # centerText(self.levelFile, 96, 3)
             self.mainMenu.draw()
 
         elif (
@@ -268,13 +278,9 @@ class Ticoban:
             centerText('Press A to continue', startY + 16, 12)
 
         if self.game_state == 5:
-            startX = (SCREEN_W / 2) - 24
-            startY = (SCREEN_H / 2) - 14
-            pyxel.rect(startX, startY, 48, 28, 3)
-            pyxel.blt(startX, startY + (3 + (self.cursorMenuPos * 8)), 0, 8, 0, 8, 8, 14)
-            pyxel.text(startX + 10, startY + 4, 'Continue', 4)
-            pyxel.text(startX + 10, startY + 12, 'Main menu', 4)
-            pyxel.text(startX + 10, startY + 20, 'Exit', 4)
+            pyxel.rect(self.pauseConf['start_x'], self.pauseConf['start_y'], 52, 36, 0)
+            centerText('PAUSE', self.pauseConf['start_y'] + 4, 6)
+            self.pauseMenu.draw()
 
     def loadLevels(self, levelfile):
         self.levels.loadLevels(levelfile)
