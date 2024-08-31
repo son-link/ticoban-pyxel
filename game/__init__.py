@@ -3,6 +3,7 @@ from .rock import Rock
 from .levels import Levels
 from .player import Player
 from .constants import SCREEN_H, SCREEN_W, COL_ROCK, COL_WALL
+from .pyxel_menu import PyxelMenu
 
 
 def centerText(text, posy, color):
@@ -16,6 +17,10 @@ def centerText(text, posy, color):
 class Ticoban:
     def __init__(self):
         self.levels = Levels()
+        self.mainMenu = PyxelMenu(72, 96, self.levels.listLevelsFiles, 3)
+        self.mainMenu.set_text_color(3)
+        self.mainMenu.set_highlight_color(5)
+        self.mainMenu.set_cursor_img(0, 128, 0, 0)
         self.levelFile = self.levels.listLevelsFiles[0]
         self.curLevel = None
         self.curLevelIndex = 0
@@ -74,6 +79,7 @@ class Ticoban:
                 (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
             ):
+                self.levels.fileSelected = self.mainMenu.get_current_pos()
                 self.levels.loadLevels()
                 self.curLevel = self.levels.getLevel(self.curLevelIndex)
                 self.getPlayerRock()
@@ -83,12 +89,14 @@ class Ticoban:
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
                 pyxel.btnp(pyxel.KEY_UP)
             ):
-                self.levelFile = self.levels.showLevelsFiles('up')
+                # self.levelFile = self.levels.showLevelsFiles('up')
+                self.mainMenu.move_up()
             elif (
                 pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
                 pyxel.btnp(pyxel.KEY_DOWN)
             ):
-                self.levelFile = self.levels.showLevelsFiles('down')
+                # self.levelFile = self.levels.showLevelsFiles('down')
+                self.mainMenu.move_down()
 
         elif self.game_state == 3 and self.player:
             colide = False
@@ -236,7 +244,8 @@ class Ticoban:
 
         if self.game_state == 2:
             centerText('Press UP or DOWN to select file.', 80, 12)
-            centerText(self.levelFile, 96, 3)
+            # centerText(self.levelFile, 96, 3)
+            self.mainMenu.draw()
 
         elif (
             (self.game_state == 3 and self.curLevel) or

@@ -46,10 +46,10 @@ class Levels:
 
                         if not levelEnd:
                             self.levels.append({
-                                'start':    levelStartLine,
-                                'end':      i,
-                                'width':    width,
-                                'title':    line.replace('title:', '').strip()
+                                'start': levelStartLine,
+                                'end': i,
+                                'width': width,
+                                'title': line.replace('title:', '').strip()
                             })
                             levelEnd = True
                             width = 0
@@ -66,10 +66,10 @@ class Levels:
             if not levelEnd:
                 end = totalLines if '#' in lastLine else totalLines - 1
                 self.levels.append({
-                    'start':    levelStartLine,
-                    'end':      end,
-                    'width':    width,
-                    'title':    ''
+                    'start': levelStartLine,
+                    'end': end,
+                    'width': width,
+                    'title': ''
                 })
 
             data.close()
@@ -99,12 +99,12 @@ class Levels:
         self.genBackground()
 
         return {
-            'width':    width,
-            'height':   height,
-            'lines':    lines,
-            'start_x':  start_x,
-            'start_y':  start_y,
-            'title':    level['title']
+            'width': width,
+            'height': height,
+            'lines': lines,
+            'start_x': start_x,
+            'start_y': start_y,
+            'title': level['title']
         }
 
     def next(self):
