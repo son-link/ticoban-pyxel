@@ -73,37 +73,25 @@ class Ticoban:
             tile_y += 1
 
     def update(self):
+        btn_pressed = self.getBtnPressed()
         if self.game_state == 1:
             if (
-                pyxel.btnp(pyxel.KEY_Z) or
-                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+                btn_pressed == 'a' or
+                (btn_pressed == 'start' and self.game_state != 3)
             ):
                 self.game_state = 2
 
         elif self.game_state == 2:
-            if (
-                pyxel.btnp(pyxel.KEY_Z) or
-                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-            ):
+            if btn_pressed == 'a' or btn_pressed == 'start':
                 self.levels.fileSelected = self.mainMenu.get_current_pos()
                 self.levels.loadLevels()
                 self.levels.curLevel = self.levels.getLevel(self.levels.curLevelIndex)
                 self.getPlayerRock()
                 self.game_state = 3
 
-            elif (
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
-                pyxel.btnp(pyxel.KEY_UP)
-            ):
-                # self.levelFile = self.levels.showLevelsFiles('up')
+            elif btn_pressed == 'up':
                 self.mainMenu.move_up()
-            elif (
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
-                pyxel.btnp(pyxel.KEY_DOWN)
-            ):
-                # self.levelFile = self.levels.showLevelsFiles('down')
+            elif btn_pressed == 'down':
                 self.mainMenu.move_down()
 
         elif self.game_state == 3 and self.player:
@@ -112,62 +100,34 @@ class Ticoban:
             next_x = 0
             next_y = 0
 
-            if (
-                (
-                    pyxel.btnp(pyxel.KEY_LEFT) or
-                    pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
-                )
-            ):
+            if btn_pressed == 'left':
                 self.player.setDir('left')
                 colide, next_x, next_y = self.collide_map(self.player, 'left')
                 moveDir = 'left' if colide != COL_WALL else None
 
-            if (
-                (
-                    pyxel.btnp(pyxel.KEY_RIGHT) or
-                    pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
-                )
-            ):
+            elif btn_pressed == 'right':
                 self.player.setDir('right')
                 colide, next_x, next_y = self.collide_map(self.player, 'right')
                 moveDir = 'right' if colide != COL_WALL else None
 
-            if (
-                (
-                    pyxel.btnp(pyxel.KEY_UP) or
-                    pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP)
-                )
-            ):
+            elif btn_pressed == 'up':
                 self.player.setDir('up')
                 colide, next_x, next_y = self.collide_map(self.player, 'up')
                 moveDir = 'up' if colide != COL_WALL else None
 
-            if (
-                (
-                    pyxel.btnp(pyxel.KEY_DOWN) or
-                    pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
-                )
-            ):
+            elif btn_pressed == 'down':
                 self.player.setDir('down')
                 colide, next_x, next_y = self.collide_map(self.player, 'down')
                 moveDir = 'down' if colide != COL_WALL else None
 
             # Reset current level
-            if (
-                pyxel.btnp(pyxel.KEY_Z) or
-                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state == 2) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-            ):
+            if btn_pressed == 'select':
                 self.clearMap()
                 self.levels.curLevel = self.levels.getLevel(self.levels.current)
                 self.getPlayerRock()
 
             # Show pause menu
-            if (
-                pyxel.btnp(pyxel.KEY_X) or
-                (pyxel.btnp(pyxel.KEY_SPACE) and self.game_state != 3) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
-            ):
+            if btn_pressed == 'start':
                 self.game_state = 5
 
             if colide == COL_ROCK:
@@ -185,11 +145,7 @@ class Ticoban:
             self.compLevelComplete()
 
         elif self.game_state == 4:
-            if (
-                pyxel.btnp(pyxel.KEY_Z) or
-                (pyxel.btnp(pyxel.KEY_RETURN) and self.game_state != 3) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-            ):
+            if btn_pressed == 'a' or btn_pressed == 'start':
                 next_level = self.levels.next()
                 if next_level:
                     self.clearMap()
@@ -199,11 +155,7 @@ class Ticoban:
 
         # Game paused
         elif self.game_state == 5:
-            if (
-                pyxel.btnp(pyxel.KEY_Z) or
-                pyxel.btnp(pyxel.KEY_RETURN) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-            ):
+            if btn_pressed == 'a':
                 if self.pauseMenu.get_current_pos() == 0:
                     self.game_state = 3
                 elif self.pauseMenu.get_current_pos() == 1:
@@ -214,21 +166,11 @@ class Ticoban:
                     self.game_state = 1
                 elif self.pauseMenu.get_current_pos() == 2:
                     pyxel.quit()
-            elif (
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
-                pyxel.btnp(pyxel.KEY_UP)
-            ):
+            elif btn_pressed == 'up':
                 self.pauseMenu.move_up()
-            elif (
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
-                pyxel.btnp(pyxel.KEY_DOWN)
-            ):
+            elif btn_pressed == 'down':
                 self.pauseMenu.move_down()
-            elif (
-                pyxel.btnp(pyxel.KEY_X) or
-                pyxel.btnp(pyxel.KEY_SPACE) or
-                pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
-            ):
+            elif btn_pressed == 'start':
                 self.pauseMenu.set_cursor_pos(0)
                 self.game_state = 3
 
@@ -338,6 +280,48 @@ class Ticoban:
         self.levels.curLevel = None
         self.rocks = []
         self.moves = 0
+
+    def getBtnPressed(self):
+        if (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP) or
+            pyxel.btnp(pyxel.KEY_UP)
+        ):
+            return 'up'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or
+            pyxel.btnp(pyxel.KEY_DOWN)
+        ):
+            return 'down'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT) or
+            pyxel.btnp(pyxel.KEY_LEFT)
+        ):
+            return 'left'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or
+            pyxel.btnp(pyxel.KEY_RIGHT)
+        ):
+            return 'right'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A) or
+            pyxel.btnp(pyxel.KEY_Z)
+        ):
+            return 'a'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_B) or
+            pyxel.btnp(pyxel.KEY_X)
+        ):
+            return 'b'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START) or
+            pyxel.btnp(pyxel.KEY_RETURN)
+        ):
+            return 'start'
+        elif (
+            pyxel.btnp(pyxel.GAMEPAD1_BUTTON_BACK) or
+            pyxel.btnp(pyxel.KEY_SPACE)
+        ):
+            return 'select'
 
 
 # tico = Ticoban()
