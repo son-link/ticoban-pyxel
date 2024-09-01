@@ -14,6 +14,9 @@ class PyxelMenu:
             limit (int, optional): The limit of options to display. Defaults to 5.
         """
         self._limit = limit
+        if options and len(options) < limit:
+            self._limit == len(options)
+
         self._x = x
         self._y = y
         self._current_pos = 0
@@ -45,15 +48,18 @@ class PyxelMenu:
 
         init = 0
         cursor_pos = self._current_pos
+        middle = pyxel.floor(self._limit / 2)
 
-        if self._current_pos < len(self._options):
+        if (
+            len(self._options) > self._limit and
+            self._current_pos < len(self._options)
+        ):
             if (
-                self._current_pos > pyxel.floor(self._limit / 2) and 
-                self._current_pos < len(self._options) - pyxel.floor(self._limit / 2)
+                self._current_pos > middle and
+                self._current_pos < len(self._options) - middle
             ):
-                init = self._current_pos - pyxel.floor(self._limit / 2)
-                cursor_pos = pyxel.floor(self._limit / 2)
-
+                init = self._current_pos - middle
+                cursor_pos = middle
             elif (
                 self._current_pos >= len(self._options) - pyxel.floor(self._limit / 2)
             ):
@@ -163,7 +169,9 @@ class PyxelMenu:
             options (list): The options list
         """
         self._options = options
-        
+        if len(self._options) < self._limit:
+            self._limit == len(options)
+
     def set_text_color(self, color: int):
         """Defines the color of the options
 

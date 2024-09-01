@@ -19,10 +19,10 @@ class Ticoban:
         self.levels = Levels()
 
         # Main menu
-        self.mainMenu = PyxelMenu(72, 96, self.levels.listLevelsFiles, 3)
+        self.mainMenu = PyxelMenu(72, 96, self.levels.listLevelsFiles)
         self.mainMenu.set_text_color(3)
         self.mainMenu.set_highlight_color(5)
-        self.mainMenu.set_cursor_img(0, 128, 0, 0)
+        self.mainMenu.set_cursor_img(0, 104, 0, 0)
         self.levelFile = self.levels.listLevelsFiles[0]
         self.levels.curLevelIndex = 0
 
@@ -40,7 +40,7 @@ class Ticoban:
         )
         self.pauseMenu.set_text_color(4)
         self.pauseMenu.set_highlight_color(6)
-        self.pauseMenu.set_cursor_img(0, 128, 0, 0)
+        self.pauseMenu.set_cursor_img(0, 104, 0, 0)
 
         self.player = None
         self.rocks = []
@@ -95,6 +95,7 @@ class Ticoban:
                 self.mainMenu.move_down()
 
         elif self.game_state == 3 and self.player:
+            self.player.update()
             colide = False
             moveDir = None
             next_x = 0
@@ -254,7 +255,7 @@ class Ticoban:
             y1 = y + 1
 
         tile_x, tile_y = pyxel.tilemaps[1].pget(x1, y1)
-        if tile_x == 7 and tile_y == 1:
+        if tile_x == 2 and tile_y == 0:
             return (COL_WALL, x1, y1)
 
         if tile_x == 1 and tile_y == 0:
@@ -280,6 +281,7 @@ class Ticoban:
         self.levels.curLevel = None
         self.rocks = []
         self.moves = 0
+        self.player.reset()
 
     def getBtnPressed(self):
         if (

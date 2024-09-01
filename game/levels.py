@@ -33,7 +33,7 @@ class Levels:
             draw_floor = False
             for char in line:
                 if char == '#':
-                    pyxel.tilemaps[1].pset(tile_x, tile_y, (7, 1))
+                    pyxel.tilemaps[1].pset(tile_x, tile_y, (2, 0))
                     draw_floor = True
                 elif char == '.' or char == '*':
                     pyxel.tilemaps[1].pset(tile_x, tile_y, (4, 0))
