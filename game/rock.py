@@ -7,9 +7,6 @@ class Rock:
         self.y = y
         self.sprite = (1, 0)
 
-    def checkCol(self):
-        print(self.x, self.y)
-
     def draw(self):
         pyxel.tilemaps[1].pset(self.x, self.y, self.sprite)
 

@@ -15,9 +15,6 @@ class Player:
         self.frames = 0
         self.dir = 'right'
 
-    def checkCol(self):
-        print(self.x, self.y)
-
     def draw(self):
         pyxel.tilemaps[1].pset(self.x, self.y, self.sprites[self.dir][self.sprite])
 
