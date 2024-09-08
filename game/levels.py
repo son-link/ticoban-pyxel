@@ -68,7 +68,6 @@ class Levels:
 
                 if len(line) > 0:
                     if line.startswith('title'):
-
                         if not levelEnd:
                             self.levels.append({
                                 'start': levelStartLine,
@@ -84,6 +83,16 @@ class Levels:
                     ):
                         levelStartLine = i
                         levelEnd = False
+                    elif not levelEnd and not (line.startswith('#') or line.startswith(' ')):
+                        if not levelEnd:
+                            self.levels.append({
+                                'start': levelStartLine,
+                                'end': i,
+                                'width': width,
+                                'title': line.replace('title:', '').strip()
+                            })
+                            levelEnd = True
+                            width = 0
 
                     if not levelEnd and len(line) > width:
                         width = len(line)
@@ -94,7 +103,7 @@ class Levels:
                     'start': levelStartLine,
                     'end': end,
                     'width': width,
-                    'title': ''
+                    'title': f'Level {len(self.levels) + 1}'
                 })
 
             data.close()
