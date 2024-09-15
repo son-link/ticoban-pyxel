@@ -50,6 +50,7 @@ class Levels:
             tile_y += 1
 
     def loadLevels(self):
+        """ Loads the levels of the file indicated in the position selected in the selection menu. """
         self.levelsFile = self.listLevelsFiles[self.fileSelected]
         self.total = 0
         self.current = 0
@@ -109,9 +110,35 @@ class Levels:
             data.close()
             self.total = len(self.levels)
 
-    def getLevel(self, index):
+    def loadLevelsFile(self, filename: str):
+        """ Loads the levels of the file indicated.
+
+        Args:
+            filename (str): The name of the file with the levels
+
+        Returns:
+            bool: If the file was found in the list of found files
+        """
+        for i in range(len(self.listLevelsFiles)):
+            if self.listLevelsFiles[i] == filename:
+                self.fileSelected = i
+                self.loadLevels()
+                return True
+
+        return False
+
+    def getLevel(self, index: int):
+        """Loads the level at the indicated position in the level list and returns a dictionary with its data.
+
+        Args:
+            index (int): The position of the level in the list of levels
+
+        Returns:
+            dict: A dictionary with the level data
+        """
         data = self.levels[index]
         lines = []
+
         with open(path.join(LEVELS_DIR, self.levelsFile), 'r', encoding='utf8') as f:
             for fline in f.readlines()[data['start']:data['end']]:
                 line = []
@@ -144,28 +171,19 @@ class Levels:
         return level
 
     def next(self):
+        """Load the next level, if available
+
+        Returns:
+            bool: If it was possible to move to the next level
+        """
         if self.current < self.total:
             self.current += 1
             return self.getLevel(self.current)
 
         return False
 
-    def showLevelsFiles(self, direction):
-        if direction == 'up':
-            if self.fileSelected > 0:
-                self.fileSelected -= 1
-            else:
-                self.fileSelected = len(self.listLevelsFiles) - 1
-
-        elif direction == 'down':
-            if self.fileSelected < len(self.listLevelsFiles) - 1:
-                self.fileSelected += 1
-            else:
-                self.fileSelected = 0
-
-        return self.listLevelsFiles[self.fileSelected]
-
     def reset(self):
+        """ Reset the level """
         self.fileSelected = 0
         self.levels = []
         self.levelsFile = None
@@ -173,6 +191,7 @@ class Levels:
         self.current = 0
 
     def genBackground(self):
+        """ Randomly generates the outer background of the level. """
         for y in range(22):
             for x in range(30):
                 rand = pyxel.rndi(1, 20)
@@ -186,3 +205,7 @@ class Levels:
                     pyxel.tilemaps[1].pset(x, y, (12, 1))
                 else:
                     pyxel.tilemaps[1].pset(x, y, (13, 1))
+
+    def get_cur_levels_file(self):
+        """ Returns the name of the current level file """
+        return self.listLevelsFiles[self.fileSelected]
