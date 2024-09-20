@@ -196,15 +196,15 @@ class Levels:
             for x in range(30):
                 rand = pyxel.rndi(1, 20)
                 if rand < 6:
-                    pyxel.tilemaps[1].pset(x, y, (10, 1))
+                    pyxel.tilemaps[1].pset(x, y, (14, 0))
                 elif rand >= 6 and rand < 10:
-                    pyxel.tilemaps[1].pset(x, y, (9, 1))
+                    pyxel.tilemaps[1].pset(x, y, (15, 0))
                 elif rand >= 10 and rand < 14:
-                    pyxel.tilemaps[1].pset(x, y, (11, 1))
+                    pyxel.tilemaps[1].pset(x, y, (16, 0))
                 elif rand >= 14 and rand < 17:
-                    pyxel.tilemaps[1].pset(x, y, (12, 1))
+                    pyxel.tilemaps[1].pset(x, y, (17, 0))
                 else:
-                    pyxel.tilemaps[1].pset(x, y, (13, 1))
+                    pyxel.tilemaps[1].pset(x, y, (18, 0))
 
     def get_cur_levels_file(self):
         """ Returns the name of the current level file """
