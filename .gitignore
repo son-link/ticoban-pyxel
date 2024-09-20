@@ -167,3 +167,7 @@ build
 appimage-build/
 build_pyxapp/
 .vscode
+docker
+game/saves
+game/levels
+!game/leves/oficial.txt
