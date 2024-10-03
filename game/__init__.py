@@ -70,6 +70,10 @@ class Ticoban:
 
         self.setMainMenuOpts()
 
+        self.frame_count = 0
+        self.delta_time = 0
+        self.previous_time = 0
+
         # Run the game
         pyxel.run(self.update, self.draw)
 
@@ -125,6 +129,7 @@ class Ticoban:
                 self.levels.curLevel = self.levels.getLevel(self.levels.curLevelIndex)
                 self.getPlayerRock()
                 self.game_state = 3
+                self.frame_count = 0
 
             elif btn_pressed == 'up':
                 self.filesMenu.move_up()
@@ -132,6 +137,9 @@ class Ticoban:
                 self.filesMenu.move_down()
 
         elif self.game_state == 3 and self.player:
+            self.delta_time = self.getTime() - self.previous_time
+            self.previous_time = self.getTime()
+            self.frame_count += 1
             self.player.update()
             colide = False
             moveDir = None
@@ -246,6 +254,7 @@ class Ticoban:
             pyxel.rect(0, 0, SCREEN_W, 8, 15)
             pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
             pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+            pyxel.text(SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
 
             self.levels.draw()
 
@@ -261,6 +270,7 @@ class Ticoban:
             pyxel.rect(0, 0, SCREEN_W, 8, 15)
             pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
             pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+            pyxel.text(SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
 
             startX = (SCREEN_W / 2) - 40
             startY = (SCREEN_H / 2) - 14
@@ -347,7 +357,7 @@ class Ticoban:
         # If the value of in_hole is the same as the number of rocks, the level is complete.
         if in_hole == len(self.rocks):
             self.game_state = 4
-            self.levels.saveScore(self.moves)
+            self.levels.saveScore(self.moves, float(f'{self.getTime():.2f}'))
 
     def clearMap(self):
         """ Clean the map """
@@ -356,6 +366,7 @@ class Ticoban:
         self.rocks = []
         self.moves = 0
         self.player.reset()
+        self.frame_count = 0
 
     def getBtnPressed(self):
         """Detects which button or key is pressed and returns a text string representing what was pressed
@@ -403,6 +414,9 @@ class Ticoban:
             pyxel.btnp(pyxel.KEY_SPACE)
         ):
             return 'select'
+
+    def getTime(self):
+        return (self.frame_count * 1) / 60
 
     def saveGame(self):
         """ Save the current state of the game so that you can continue it at a later time. """

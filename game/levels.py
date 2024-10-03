@@ -122,6 +122,7 @@ class Levels:
                 for i in range(0, self.total):
                     self.levelsScore.append({
                         'steps': 0,
+                        'time': 0.00
                     })
 
                 Saves.save(self.levelsScore, self.saveName)
@@ -228,13 +229,23 @@ class Levels:
         """ Returns the name of the current level file """
         return self.listLevelsFiles[self.fileSelected]
 
-    def saveScore(self, steps: int):
+    def saveScore(self, steps: int, time: float):
         """Saves the current level score, provided that the current score is 0 (not yet played), or the score received is lower.
 
         Args:
             steps (int): The number of moves made by the player
         """
         current_score = self.levelsScore[self.current]['steps']
+        current_time = float(self.levelsScore[self.current]['time'])
+        save = False
+
         if current_score == 0 or steps < current_score:
             self.levelsScore[self.current]['steps'] = steps
+            save = True
+
+        if current_time == 0.00 or time < current_time:
+            self.levelsScore[self.current]['time'] = time
+            save = True
+
+        if save:
             Saves.save(self.levelsScore, self.saveName)
