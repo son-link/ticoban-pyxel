@@ -347,6 +347,7 @@ class Ticoban:
         # If the value of in_hole is the same as the number of rocks, the level is complete.
         if in_hole == len(self.rocks):
             self.game_state = 4
+            self.levels.saveScore(self.moves)
 
     def clearMap(self):
         """ Clean the map """

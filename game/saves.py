@@ -35,7 +35,7 @@ class Saves:
             return None
 
     @staticmethod
-    def save(data: dict, filename: str):
+    def save(data: any, filename: str):
         """Save the dictionary passed by the data parameter in the file with the name passed by filename, without extension, in JSON format.
 
         Args:

@@ -1,6 +1,8 @@
 from os import listdir, path
 import sys
 import pyxel
+from .saves import Saves, SAVES_DIR
+from pathlib import Path
 
 __dir = ''
 if getattr(sys, 'frozen', False):
@@ -20,6 +22,8 @@ class Levels:
         self.total = 0
         self.current = 0
         self.curLevel = None
+        self.levelsScore = []
+        self.saveName = ''
 
         for f in sorted(listdir(LEVELS_DIR)):
             self.listLevelsFiles.append(f)
@@ -109,6 +113,20 @@ class Levels:
 
             data.close()
             self.total = len(self.levels)
+            self.levelsScore = []
+
+            # Load saves or create new one
+            self.saveName = Path(self.levelsFile).stem
+            savefile = path.join(SAVES_DIR, f'{self.saveName}.json')
+            if not path.isfile(savefile):
+                for i in range(0, self.total):
+                    self.levelsScore.append({
+                        'steps': 0,
+                    })
+
+                Saves.save(self.levelsScore, self.saveName)
+            else:
+                self.levelsScore = Saves.open(self.saveName)
 
     def loadLevelsFile(self, filename: str):
         """ Loads the levels of the file indicated.
@@ -209,3 +227,14 @@ class Levels:
     def get_cur_levels_file(self):
         """ Returns the name of the current level file """
         return self.listLevelsFiles[self.fileSelected]
+
+    def saveScore(self, steps: int):
+        """Saves the current level score, provided that the current score is 0 (not yet played), or the score received is lower.
+
+        Args:
+            steps (int): The number of moves made by the player
+        """
+        current_score = self.levelsScore[self.current]['steps']
+        if current_score == 0 or steps < current_score:
+            self.levelsScore[self.current]['steps'] = steps
+            Saves.save(self.levelsScore, self.saveName)
