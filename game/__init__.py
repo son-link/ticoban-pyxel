@@ -300,6 +300,8 @@ class Ticoban:
         self.levels.curLevelIndex = save['level']
         self.player = Player(save['player']['x'], save['player']['y'])
         self.player.dir = save['player']['direction']
+        self.moves = save['moves']
+        self.frame_count = save['frame_count']
 
         for rock in save['rocks']:
             self.rocks.append(Rock(rock['x'], rock['y']))
@@ -436,7 +438,8 @@ class Ticoban:
             'rocks': rocks,
             'moves': self.moves,
             'level_file': self.levels.get_cur_levels_file(),
-            'level': self.levels.current
+            'level': self.levels.current,
+            'frame_count': self.frame_count
         }
 
         Saves.save(data, 'savegame')
