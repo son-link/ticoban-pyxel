@@ -2,7 +2,7 @@ import pyxel
 from .rock import Rock
 from .levels import Levels
 from .player import Player
-from .constants import SCREEN_H, SCREEN_W, COL_ROCK, COL_WALL
+from . import constants
 from .pyxel_menu import PyxelMenu
 from .saves import Saves, SAVES_DIR
 from os import path
@@ -11,7 +11,7 @@ from os import path
 def centerText(text, posy, color):
     '''Centres a text on the screen'''
     pyxel.text(
-        (SCREEN_W / 2) - ((len(text) * 4) / 2),
+        (constants.SCREEN_W / 2) - ((len(text) * 4) / 2),
         posy, text, color
     )
 
@@ -37,8 +37,8 @@ class Ticoban:
 
         # Pause menu
         self.pauseConf = {
-            'start_x': (SCREEN_W / 2) - 34,
-            'start_y': ((SCREEN_H / 2) - 18),
+            'start_x': (constants.SCREEN_W / 2) - 34,
+            'start_y': ((constants.SCREEN_H / 2) - 18),
         }
 
         self.pauseMenu = PyxelMenu(
@@ -60,7 +60,7 @@ class Ticoban:
         self.moves = 0
 
         # Init Pyxel and load assets
-        pyxel.init(SCREEN_W, SCREEN_H, title='Ticoban', display_scale=3,
+        pyxel.init(constants.SCREEN_W, constants.SCREEN_H, title='Ticoban', display_scale=3,
                    capture_scale=2, capture_sec=40)
         pyxel.load('assets.pyxres')
 
@@ -105,11 +105,11 @@ class Ticoban:
 
         # We get a string that represents that you have pressed
         btn_pressed = self.getBtnPressed()
-        if self.game_state == 1:
+        if self.game_state == constants.GAME_MAIN_MENU:
             if (btn_pressed == 'a' or btn_pressed == 'start'):
                 selected = self.mainMenu.get_current_pos()
                 if selected == 0:
-                    self.game_state = 2
+                    self.game_state = constants.GAME_SEL_FILE
                 elif selected == 1:
                     if self.withLoadSave:
                         self.loadSave()
@@ -122,21 +122,22 @@ class Ticoban:
             elif btn_pressed == 'down':
                 self.mainMenu.move_down()
 
-        elif self.game_state == 2:
+        elif self.game_state == constants.GAME_SEL_FILE:
             if btn_pressed == 'a' or btn_pressed == 'start':
                 self.levels.fileSelected = self.filesMenu.get_current_pos()
                 self.levels.loadLevels()
                 self.levels.curLevel = self.levels.getLevel(self.levels.curLevelIndex)
                 self.getPlayerRock()
-                self.game_state = 3
+                self.game_state = constants.GAME_PLAYING
                 self.frame_count = 0
+                self.levels.genMenuOpts()
 
             elif btn_pressed == 'up':
                 self.filesMenu.move_up()
             elif btn_pressed == 'down':
                 self.filesMenu.move_down()
 
-        elif self.game_state == 3 and self.player:
+        elif self.game_state == constants.GAME_PLAYING and self.player:
             self.delta_time = self.getTime() - self.previous_time
             self.previous_time = self.getTime()
             self.frame_count += 1
@@ -149,22 +150,22 @@ class Ticoban:
             if btn_pressed == 'left':
                 self.player.setDir('left')
                 colide, next_x, next_y = self.collide_map(self.player, 'left')
-                moveDir = 'left' if colide != COL_WALL else None
+                moveDir = 'left' if colide != constants.COL_WALL else None
 
             elif btn_pressed == 'right':
                 self.player.setDir('right')
                 colide, next_x, next_y = self.collide_map(self.player, 'right')
-                moveDir = 'right' if colide != COL_WALL else None
+                moveDir = 'right' if colide != constants.COL_WALL else None
 
             elif btn_pressed == 'up':
                 self.player.setDir('up')
                 colide, next_x, next_y = self.collide_map(self.player, 'up')
-                moveDir = 'up' if colide != COL_WALL else None
+                moveDir = 'up' if colide != constants.COL_WALL else None
 
             elif btn_pressed == 'down':
                 self.player.setDir('down')
                 colide, next_x, next_y = self.collide_map(self.player, 'down')
-                moveDir = 'down' if colide != COL_WALL else None
+                moveDir = 'down' if colide != constants.COL_WALL else None
 
             # Reset current level
             if btn_pressed == 'select':
@@ -174,11 +175,11 @@ class Ticoban:
 
             # Show pause menu
             if btn_pressed == 'start':
-                self.game_state = 5
+                self.game_state = constants.GAME_PAUSED
 
             # If the player's collision with a stone was detected, we check whether we can move it in the direction,
             # and if so, we move both
-            if colide == COL_ROCK:
+            if colide == constants.COL_ROCK:
                 for rock in self.rocks:
                     if rock.x == next_x and rock.y == next_y:
                         colide1, next_x1, next_y1 = self.collide_map(rock, moveDir)
@@ -192,27 +193,27 @@ class Ticoban:
 
             self.compLevelComplete()
 
-        elif self.game_state == 4:
+        elif self.game_state == constants.GAME_LEVEL_COMP:
             if btn_pressed == 'a' or btn_pressed == 'start':
                 next_level = self.levels.next()
                 if next_level:
                     self.clearMap()
                     self.levels.curLevel = next_level
                     self.getPlayerRock()
-                    self.game_state = 3
+                    self.game_state = constants.GAME_PLAYING
 
         # Game paused
-        elif self.game_state == 5:
+        elif self.game_state == constants.GAME_PAUSED:
             if btn_pressed == 'a':
                 if self.pauseMenu.get_current_pos() == 0:
-                    self.game_state = 3
+                    self.game_state = constants.GAME_PLAYING
                 elif self.pauseMenu.get_current_pos() == 1:
                     self.levelFile = self.levels.listLevelsFiles[0]
                     self.clearMap()
                     self.levels.reset()
                     self.pauseMenu.set_cursor_pos(0)
                     self.setMainMenuOpts()
-                    self.game_state = 1
+                    self.game_state = constants.GAME_MAIN_MENU
                 elif self.pauseMenu.get_current_pos() == 2:
                     self.saveGame()
                 elif self.pauseMenu.get_current_pos() == 3:
@@ -223,7 +224,7 @@ class Ticoban:
                 self.pauseMenu.move_down()
             elif btn_pressed == 'start':
                 self.pauseMenu.set_cursor_pos(0)
-                self.game_state = 3
+                self.game_state = constants.GAME_PLAYING
 
     def draw(self):
         """This function is called in each frame and inside it is where we
@@ -232,29 +233,29 @@ class Ticoban:
 
         pyxel.cls(0)
 
-        if self.game_state == 1 or self.game_state == 2:
-            pyxel.bltm(0, 0, 0, 0, 0, SCREEN_W, SCREEN_H)
+        if self.game_state == constants.GAME_MAIN_MENU or self.game_state == constants.GAME_SEL_FILE:
+            pyxel.bltm(0, 0, 0, 0, 0, constants.SCREEN_W, constants.SCREEN_H)
             centerText('Press A (Z key) to start.', 72, 12)
-            centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', SCREEN_H - 16, 12)
-            if self.game_state == 1:
+            centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', constants.SCREEN_H - 16, 12)
+            if self.game_state == constants.GAME_MAIN_MENU:
                 self.mainMenu.draw()
 
-        if self.game_state == 2:
+        if self.game_state == constants.GAME_SEL_FILE:
             centerText('Press UP or DOWN to select file.', 80, 12)
             self.filesMenu.draw()
 
         elif (
-            (self.game_state == 3 and self.levels.curLevel) or
-            self.game_state == 4 or
-            self.game_state == 5
+            (self.game_state == constants.GAME_PLAYING and self.levels.curLevel) or
+            self.game_state == constants.GAME_LEVEL_COMP or
+            self.game_state == constants.GAME_PAUSED
         ):
-            pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
+            pyxel.bltm(0, 0, 1, 0, 0, constants.SCREEN_W, constants.SCREEN_H)
 
-            # Show movements and map's name
-            pyxel.rect(0, 0, SCREEN_W, 8, 15)
+            # Show movements, time and map's name
+            pyxel.rect(0, 0, constants.SCREEN_W, 8, 15)
             pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
-            pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
-            pyxel.text(SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
+            pyxel.text(constants.SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+            pyxel.text(constants.SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
 
             self.levels.draw()
 
@@ -265,20 +266,20 @@ class Ticoban:
                 for rock in self.rocks:
                     rock.draw()
 
-        if self.game_state == 4:
-            pyxel.bltm(0, 0, 1, 0, 0, SCREEN_W, SCREEN_H)
-            pyxel.rect(0, 0, SCREEN_W, 8, 15)
+        if self.game_state == constants.GAME_LEVEL_COMP:
+            pyxel.bltm(0, 0, 1, 0, 0, constants.SCREEN_W, constants.SCREEN_H)
+            pyxel.rect(0, 0, constants.SCREEN_W, 8, 15)
             pyxel.text(8, 1, f"Map: {self.levels.curLevel['title']}", 12)
-            pyxel.text(SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
-            pyxel.text(SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
+            pyxel.text(constants.SCREEN_W - 48, 1, f'Moves: {self.moves:03}', 12)
+            pyxel.text(constants.SCREEN_W - 96, 1, f'Time: {self.getTime():.2f}', 12)
 
-            startX = (SCREEN_W / 2) - 40
-            startY = (SCREEN_H / 2) - 14
+            startX = (constants.SCREEN_W / 2) - 40
+            startY = (constants.SCREEN_H / 2) - 14
             pyxel.rect(startX, startY, 80, 28, 0)
             centerText('LEVEL COMPLETE', startY + 4, 6)
             centerText('Press A to continue', startY + 16, 12)
 
-        if self.game_state == 5:
+        if self.game_state == constants.GAME_PAUSED:
             pyxel.rect(self.pauseConf['start_x'], self.pauseConf['start_y'], 64, 44, 0)
             centerText('PAUSE', self.pauseConf['start_y'] + 4, 6)
             self.pauseMenu.draw()
@@ -306,7 +307,7 @@ class Ticoban:
         for rock in save['rocks']:
             self.rocks.append(Rock(rock['x'], rock['y']))
 
-        self.game_state = 3
+        self.game_state = constants.GAME_PLAYING
         Saves.delete('savegame')
         self.withLoadSave = False
 
@@ -338,10 +339,10 @@ class Ticoban:
 
         tile_x, tile_y = pyxel.tilemaps[1].pget(x1, y1)
         if tile_x == 2 and tile_y == 0:
-            return (COL_WALL, x1, y1)
+            return (constants.COL_WALL, x1, y1)
 
         if tile_x == 1 and tile_y == 0:
-            return (COL_ROCK, x1, y1)
+            return (constants.COL_ROCK, x1, y1)
 
         self.moves += 1
         return (False, x1, y1)
@@ -358,7 +359,7 @@ class Ticoban:
 
         # If the value of in_hole is the same as the number of rocks, the level is complete.
         if in_hole == len(self.rocks):
-            self.game_state = 4
+            self.game_state = constants.GAME_LEVEL_COMP
             self.levels.saveScore(self.moves, float(f'{self.getTime():.2f}'))
 
     def clearMap(self):
