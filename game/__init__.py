@@ -274,7 +274,12 @@ class Ticoban:
             centerText('Press UP or DOWN to select level.', 80, 12)
             self.levelsMenu.draw()
             score = self.levels.getLevelScore(self.levelsMenu.get_current_pos())
-            pyxel.text(72, constants.SCREEN_H - 32, f"Moves: {score['steps']:03} Time: {score['time']:.2f}", 3)
+
+            if score['steps'] > 0:
+                pyxel.text(72, constants.SCREEN_H - 32, f"Moves: {score['steps']:03} Time: {score['time']:.2f}", 3)
+            else:
+                pyxel.text(72, constants.SCREEN_H - 32, 'No score', 3)
+
             centerText('Press A (Z key) to start.', constants.SCREEN_H - 24, 12)
 
         elif (
