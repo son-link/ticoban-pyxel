@@ -35,6 +35,12 @@ class Ticoban:
         self.levelFile = self.levels.listLevelsFiles[0]
         self.levels.curLevelIndex = 0
 
+        # Levels menu
+        self.levelsMenu = PyxelMenu(72, 96)
+        self.levelsMenu.set_text_color(3)
+        self.levelsMenu.set_highlight_color(5)
+        self.levelsMenu.set_cursor_img(0, 104, 0, 0)
+
         # Pause menu
         self.pauseConf = {
             'start_x': (constants.SCREEN_W / 2) - 34,
@@ -126,16 +132,28 @@ class Ticoban:
             if btn_pressed == 'a' or btn_pressed == 'start':
                 self.levels.fileSelected = self.filesMenu.get_current_pos()
                 self.levels.loadLevels()
-                self.levels.curLevel = self.levels.getLevel(self.levels.curLevelIndex)
-                self.getPlayerRock()
-                self.game_state = constants.GAME_PLAYING
-                self.frame_count = 0
-                self.levels.genMenuOpts()
-
+                self.levelsMenu.set_cursor_pos(0)
+                self.levelsMenu.set_options(self.levels.getLevels())
+                self.game_state = constants.GAME_SEL_LEVEL
+            elif btn_pressed == 'b':
+                self.game_state = constants.GAME_MAIN_MENU
             elif btn_pressed == 'up':
                 self.filesMenu.move_up()
             elif btn_pressed == 'down':
                 self.filesMenu.move_down()
+
+        elif self.game_state == constants.GAME_SEL_LEVEL:
+            if btn_pressed == 'a' or btn_pressed == 'start':
+                self.levels.getLevel(self.levelsMenu.get_current_pos())
+                self.getPlayerRock()
+                self.frame_count = 0
+                self.game_state = constants.GAME_PLAYING
+            elif btn_pressed == 'b':
+                self.game_state = constants.GAME_SEL_FILE
+            elif btn_pressed == 'up':
+                self.levelsMenu.move_up()
+            elif btn_pressed == 'down':
+                self.levelsMenu.move_down()
 
         elif self.game_state == constants.GAME_PLAYING and self.player:
             self.delta_time = self.getTime() - self.previous_time
@@ -233,9 +251,17 @@ class Ticoban:
 
         pyxel.cls(0)
 
-        if self.game_state == constants.GAME_MAIN_MENU or self.game_state == constants.GAME_SEL_FILE:
+        if (
+            self.game_state == constants.GAME_MAIN_MENU or
+            self.game_state == constants.GAME_SEL_FILE or
+            self.game_state == constants.GAME_SEL_LEVEL
+        ):
             pyxel.bltm(0, 0, 0, 0, 0, constants.SCREEN_W, constants.SCREEN_H)
-            centerText('Press A (Z key) to start.', 72, 12)
+            if (self.game_state == constants.GAME_MAIN_MENU):
+                centerText('Press A (Z key) to start.', 72, 12)
+            else:
+                centerText('Press A (Z key) to start. B to back', 72, 12)
+
             centerText('(c) 2020 - 2024 Alfonso Saavedra "Son Link"', constants.SCREEN_H - 16, 12)
             if self.game_state == constants.GAME_MAIN_MENU:
                 self.mainMenu.draw()
@@ -243,6 +269,13 @@ class Ticoban:
         if self.game_state == constants.GAME_SEL_FILE:
             centerText('Press UP or DOWN to select file.', 80, 12)
             self.filesMenu.draw()
+
+        elif self.game_state == constants.GAME_SEL_LEVEL:
+            centerText('Press UP or DOWN to select level.', 80, 12)
+            self.levelsMenu.draw()
+            score = self.levels.getLevelScore(self.levelsMenu.get_current_pos())
+            pyxel.text(72, constants.SCREEN_H - 32, f"Moves: {score['steps']:03} Time: {score['time']:.2f}", 3)
+            centerText('Press A (Z key) to start.', constants.SCREEN_H - 24, 12)
 
         elif (
             (self.game_state == constants.GAME_PLAYING and self.levels.curLevel) or

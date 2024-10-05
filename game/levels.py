@@ -58,6 +58,7 @@ class Levels:
         self.levelsFile = self.listLevelsFiles[self.fileSelected]
         self.total = 0
         self.current = 0
+        self.levels = []
 
         with open(path.join(LEVELS_DIR, self.levelsFile), 'r', encoding='utf-8') as data:
             levelStartLine = 0
@@ -155,6 +156,7 @@ class Levels:
         Returns:
             dict: A dictionary with the level data
         """
+        self.current = index
         data = self.levels[index]
         lines = []
 
@@ -188,6 +190,17 @@ class Levels:
 
         self.curLevel = level
         return level
+
+    def getLevelScore(self, index: int):
+        """Return the score (moves and time) of the indicated level
+
+        Args:
+            index (int): The position of the level in the level array
+
+        Returns:
+            dict: Level score
+        """
+        return self.levelsScore[index]
 
     def next(self):
         """Load the next level, if available
@@ -228,6 +241,19 @@ class Levels:
     def get_cur_levels_file(self):
         """ Returns the name of the current level file """
         return self.listLevelsFiles[self.fileSelected]
+
+    def getLevels(self):
+        """Generate and return a formatted menu for select level
+        """
+        options = []
+        for i in range(0, len(self.levels)):
+            level = self.levels[i]
+
+            options.append(
+                level['title']
+            )
+
+        return options
 
     def saveScore(self, steps: int, time: float):
         """Saves the current level score, provided that the current score is 0 (not yet played), or the score received is lower.
