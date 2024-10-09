@@ -21,14 +21,14 @@ class Ticoban:
         self.levels = Levels()
 
         # Main menu
-        self.mainMenu = PyxelMenu(72, 96, limit=3)
+        self.mainMenu = PyxelMenu(72, 96)
         self.mainMenu.set_text_color(3)
         self.mainMenu.set_highlight_color(5)
         self.mainMenu.set_cursor_img(0, 104, 0, 0)
         self.withLoadSave = False
 
         # Files menu
-        self.filesMenu = PyxelMenu(72, 96, self.levels.listLevelsFiles)
+        self.filesMenu = PyxelMenu(72, 96, self.levels.getLevelsFiles())
         self.filesMenu.set_text_color(3)
         self.filesMenu.set_highlight_color(5)
         self.filesMenu.set_cursor_img(0, 104, 0, 0)
@@ -115,8 +115,13 @@ class Ticoban:
             if (btn_pressed == 'a' or btn_pressed == 'start'):
                 selected = self.mainMenu.get_current_pos()
                 if selected == 0:
-                    self.game_state = constants.GAME_SEL_FILE
+                    self.levels.loadLevelsFile('oficial.txt')
+                    self.levelsMenu.set_cursor_pos(0)
+                    self.levelsMenu.set_options(self.levels.getLevels())
+                    self.game_state = constants.GAME_SEL_LEVEL
                 elif selected == 1:
+                    self.game_state = constants.GAME_SEL_FILE
+                elif selected == 2:
                     if self.withLoadSave:
                         self.loadSave()
                     else:
@@ -487,6 +492,6 @@ class Ticoban:
     def setMainMenuOpts(self):
         """ Defines the main menu options depending on whether or not the save file exists. """
         if path.isfile(path.join(SAVES_DIR, 'savegame.json')):
-            self.mainMenu.set_options(['Start', 'Load save', 'Exit'])
+            self.mainMenu.set_options(['Start', 'Select file', 'Load save', 'Exit'])
         else:
-            self.mainMenu.set_options(['Start', 'Exit'])
+            self.mainMenu.set_options(['Start', 'Select file', 'Exit'])

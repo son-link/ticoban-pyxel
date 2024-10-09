@@ -255,6 +255,15 @@ class Levels:
 
         return options
 
+    def getLevelsFiles(self):
+        """ Return a list of the files inside levels, except oficial.txt """
+        files = []
+        for f in self.listLevelsFiles:
+            if f != 'oficial.txt':
+                files.append(f)
+
+        return files
+
     def saveScore(self, steps: int, time: float):
         """Saves the current level score, provided that the current score is 0 (not yet played), or the score received is lower.
 
