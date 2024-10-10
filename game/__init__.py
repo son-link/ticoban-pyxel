@@ -75,6 +75,11 @@ class Ticoban:
         if path.isfile(path.join(SAVES_DIR, 'savegame.json')):
             self.withLoadSave = True
 
+        self.extraLevels = False
+        # Now let's check if in the folder levels there are more files apart from the official one
+        if len(self.levels.getLevelsFiles()) > 0:
+            self.extraLevels = True
+
         self.setMainMenuOpts()
 
         self.frame_count = 0
@@ -122,7 +127,10 @@ class Ticoban:
                     self.game_state = constants.GAME_SEL_LEVEL
                     self.playOficial = True
                 elif selected == 1:
-                    self.game_state = constants.GAME_SEL_FILE
+                    if self.extraLevels:
+                        self.game_state = constants.GAME_SEL_FILE
+                    elif self.withLoadSave:
+                        self.loadSave()
                 elif selected == 2:
                     if self.withLoadSave:
                         self.loadSave()
@@ -497,7 +505,15 @@ class Ticoban:
 
     def setMainMenuOpts(self):
         """ Defines the main menu options depending on whether or not the save file exists. """
+
+        opts = ['Start']
+
+        if self.extraLevels:
+            opts.append('Select file')
+
         if path.isfile(path.join(SAVES_DIR, 'savegame.json')):
-            self.mainMenu.set_options(['Start', 'Select file', 'Load save', 'Exit'])
-        else:
-            self.mainMenu.set_options(['Start', 'Select file', 'Exit'])
+            opts.append('Load save')
+
+        opts.append('Exit')
+
+        self.mainMenu.set_options(opts)
