@@ -49,7 +49,7 @@ class Saves:
 
         # First we check if the directory where the files are stored does not exist, if not, we create it.
         if not path.isdir(SAVES_DIR):
-            mkdir(SAVES_DIR, 777)
+            mkdir(SAVES_DIR, 0o777)
 
         with open(savefile, 'w', encoding='utf8') as fp:
             try:
