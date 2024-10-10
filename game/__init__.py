@@ -64,6 +64,7 @@ class Ticoban:
         self.game_state = 1
         self.cursorMenuPos = 0
         self.moves = 0
+        self.playOficial = False
 
         # Init Pyxel and load assets
         pyxel.init(constants.SCREEN_W, constants.SCREEN_H, title='Ticoban', display_scale=3,
@@ -119,6 +120,7 @@ class Ticoban:
                     self.levelsMenu.set_cursor_pos(0)
                     self.levelsMenu.set_options(self.levels.getLevels())
                     self.game_state = constants.GAME_SEL_LEVEL
+                    self.playOficial = True
                 elif selected == 1:
                     self.game_state = constants.GAME_SEL_FILE
                 elif selected == 2:
@@ -154,7 +156,11 @@ class Ticoban:
                 self.frame_count = 0
                 self.game_state = constants.GAME_PLAYING
             elif btn_pressed == 'b':
-                self.game_state = constants.GAME_SEL_FILE
+                if self.playOficial:
+                    self.game_state = constants.GAME_MAIN_MENU
+                    self.playOficial = False
+                else:
+                    self.game_state = constants.GAME_SEL_FILE
             elif btn_pressed == 'up':
                 self.levelsMenu.move_up()
             elif btn_pressed == 'down':
