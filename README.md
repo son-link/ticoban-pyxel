@@ -9,7 +9,7 @@
 
 ## English
 
-A Sobokan clone make with [Pyxel](https://github.com/kitao/pyxel) for Linux, Windows and some based Linux consoles
+A Skoban clone make with [Pyxel](https://github.com/kitao/pyxel) for Linux, Windows and some based Linux consoles
 
 In this game you must move the balls to the holes to go to the next level.
 
